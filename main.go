@@ -46,7 +46,7 @@ func main() {
 	}
 
 	expr := regexp.MustCompile(`^[-+]?((\d+[.]\d+)|\d+)[-+*\/]{1}((\d+[.]\d+)|\d+)[=][?]$`)
-	digitExpr := regexp.MustCompile(`(\d+[.]\d+)|\d+`)
+	digitExpr := regexp.MustCompile(`[-+]?(\d+[.]\d+)|\d+`)
 	mathExpr := regexp.MustCompile(`[-+*\/]{1}`)
 	replaceExpr := regexp.MustCompile(`\?`)
 
