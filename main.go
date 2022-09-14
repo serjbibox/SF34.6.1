@@ -38,8 +38,8 @@ func main() {
 	replaceExpr := regexp.MustCompile(`\?`)
 	var linesOut string
 	for _, s := range lines {
-		exp := expr.FindAllString(s, -1)
-		if exp == nil {
+		mathExp := expr.FindAllString(s, -1)
+		if mathExp == nil {
 			continue
 		}
 		//log.Printf("мат. выражение строки %d: %s", idx, s)
