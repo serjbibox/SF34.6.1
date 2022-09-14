@@ -87,9 +87,9 @@ func main() {
 		default:
 			continue
 		}
-		writer.Flush()
-	}
 
+	}
+	writer.Flush()
 	log.Println(buf)
 
 	err = ioutil.WriteFile("./"+fout, buf.content, 0777)
