@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,6 +9,18 @@ import (
 	"strconv"
 	"strings"
 )
+
+type Buffer struct {
+	content []byte
+}
+
+func (b *Buffer) Write(p []byte) (n int, err error) {
+	b.content = append(b.content, p...)
+	return len(p), nil
+}
+func (b *Buffer) String() string {
+	return string(b.content)
+}
 
 func main() {
 	fmt.Print("Укажите файл для чтения: ")
@@ -36,7 +49,10 @@ func main() {
 	digitExpr := regexp.MustCompile(`(\d+[.]\d+)|\d+`)
 	mathExpr := regexp.MustCompile(`[-+*\/]{1}`)
 	replaceExpr := regexp.MustCompile(`\?`)
-	var linesOut string
+
+	buf := &Buffer{}
+	writer := bufio.NewWriter(buf)
+
 	for _, s := range lines {
 		mathExp := expr.FindAllString(s, -1)
 		if mathExp == nil {
@@ -55,25 +71,28 @@ func main() {
 		}
 
 		do := mathExpr.FindString(s)
-
 		switch do {
 		case "+":
-			linesOut += replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1+n2))
+			_, _ = writer.Write([]byte(replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1+n2))))
 		case "-":
-			linesOut += replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1-n2))
+			_, _ = writer.Write([]byte(replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1-n2))))
 		case "*":
-			linesOut += replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1*n2))
+			_, _ = writer.Write([]byte(replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1*n2))))
 		case "/":
 			if n2 == 0 {
 				log.Printf("делитель не должен равняться нулю!")
 				continue
 			}
-			linesOut += replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1/n2))
+			_, _ = writer.Write([]byte(replaceExpr.ReplaceAllString(s, fmt.Sprintf("%v\n", n1/n2))))
+		default:
+			continue
 		}
+		writer.Flush()
 	}
 
-	log.Println(linesOut)
-	err = ioutil.WriteFile("./"+fout, []byte(linesOut), 0777)
+	log.Println(buf)
+
+	err = ioutil.WriteFile("./"+fout, buf.content, 0777)
 	if err != nil {
 		log.Fatal(err)
 	}
